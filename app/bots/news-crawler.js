@@ -4,7 +4,16 @@ var request = require('request');
 var cheerio = require('cheerio');
 const fs = require('fs');
 
+var re = /^(\+\d{1,2}\s)?\(?\d{3}\)?[\s.-]\d{3}[\s.-]\d{4}/;
+var str = '(206)-383-1273';
+var m;
 
+if ((m = re.exec(str)) !== null) {
+    if (m.index === re.lastIndex) {
+        re.lastIndex++;
+    }
+console.log(m[0])
+}
 
 //reddit
 request("https://www.reddit.com", function(error, response, body) {
