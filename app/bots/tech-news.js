@@ -4,8 +4,8 @@ const request = require('request');
 const cheerio = require('cheerio');
 const fs = require('fs');
 
-//blog lists
-var blog1 = {url:"https://blog.codinghorror.com", name: "Coding Horror", category: "blog"};
+//global health corp contacts
+var blog1 = {url:"https://blog.codinghorror.com", name: "Merck", category: "blog"};
 var blog2 = {url:"https://davidwalsh.name", name: "David Walsh", category: "blog"};
 
 
@@ -21,6 +21,7 @@ request(blog1.url, function(error, response, body) {
   var title, description, date, link, source;
   var json = {title: "", description:"", date:"", link:"", source:""};
 
+
   $('main.content > article.post').each(function( index ) {
     var title = $(this).find('header.post-header > h2.post-title').text().trim();
     var description = $(this).find('section.post-content > p').text().trim().slice(0,100);
@@ -35,7 +36,8 @@ request(blog1.url, function(error, response, body) {
       json.link = link;
       json.source = source;
   //print to json
-       fs.appendFileSync('app/output/tech.json', JSON.stringify(json) + '\n');
+      $('#stories').appendTo(json);
+       fs.appendFileSync('app/output/tech1.json', JSON.stringify(json) + '\n');
   });
 });
 

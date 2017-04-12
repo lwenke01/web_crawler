@@ -3,14 +3,18 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "angular": "^1.5.7",
+    "browserfy": "^1.0.0",
+    "browserify": "^14.3.0",
     "cheerio": "^0.20.0",
     "request": "^2.72.0",
+    "uniq": "^1.0.1",
     "url-parse": "^1.1.1"
   },
   "devDependencies": {},
