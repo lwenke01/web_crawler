@@ -10,13 +10,17 @@
   "license": "ISC",
   "dependencies": {
     "angular": "^1.5.7",
+    "aws-sdk": "^2.41.0",
+    "bluebird": "^3.5.0",
     "browserfy": "^1.0.0",
     "browserify": "^14.3.0",
     "cheerio": "^0.20.0",
     "jquery": "^3.2.1",
+    "path": "^0.12.7",
     "request": "^2.72.0",
     "uniq": "^1.0.1",
-    "url-parse": "^1.1.1"
+    "url-parse": "^1.1.1",
+    "xmlhttprequest": "^1.8.0"
   },
   "devDependencies": {},
   "description": ""

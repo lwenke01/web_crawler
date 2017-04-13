@@ -82,8 +82,8 @@ request(company1.url, function(error, response, body) {
     json.source = source
     json.lastUpdated = lastUpdated;
     //print to json
-
-    fs.appendFileSync('app/output/leadership.json', JSON.stringify(json) + '\n');
+  var newCo = company1.name.toLowerCase();
+    fs.appendFileSync('app/output/company_profiles/'+ newCo + '.json', JSON.stringify(json) + '\n');
 
   });
 });
@@ -95,7 +95,7 @@ request(company2.url, function(error, response, body) {
   }
   console.log('Status code: ' + response.statusCode);
   var $ = cheerio.load(body);
-
+var newArray = [];
   $('.profile-media-block-container2 > .profile-media-block2.executive-block').each(function( index ){
 
     var _id = $(this).find('img').attr('alt').split('.')[0];
@@ -127,9 +127,15 @@ request(company2.url, function(error, response, body) {
     json.lastUpdated = lastUpdated;
     //print to json
 
-    fs.appendFileSync('app/output/leadership.json', JSON.stringify(json) + '\n');
+
+
+    newArray.push( JSON.stringify(json )+ '\n' );
+
+    var newCo = company2.name.toLowerCase();
+    fs.appendFileSync('app/output/company_profiles/'+ newCo + '.json', JSON.stringify(json )+ '\n');
 
   });
+
 });
 
 request(company3.url, function(error, response, body) {
@@ -171,8 +177,8 @@ request(company3.url, function(error, response, body) {
     json.source = source;
     json.lastUpdated = lastUpdated;
     //print to json
-
-    fs.appendFileSync('app/output/leadership.json', JSON.stringify(json) + '\n');
+  var newCo = company3.name.toLowerCase();
+    fs.appendFileSync('app/output/company_profiles/'+ newCo + '.json', JSON.stringify(json) + '\n');
 
   });
 });
