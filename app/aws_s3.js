@@ -1,11 +1,16 @@
 'use strict';
 
+module.exports = {
+
+
 let promise = require('bluebird');
 let path = require('path');
 let XMLHttpRequest = require("xmlhttprequest").XMLHttpRequest;
 let xhr = new XMLHttpRequest();
 let fs = require('fs');
 let AWS = require('aws-sdk');
+var strs = require('stringstream');
+
 // let uuid = require('node-uuid');
 // let insta = require('../../config/instagram')
 // let file = './output/leadership.json';
@@ -19,20 +24,23 @@ let s3 = new AWS.S3();
 let bucketName = 'linksbridge-test';
 
 readObjects('pfizer');
-getData(file_1, 'pfizer');
-getData(file_2, 'merck');
-getData(file_3, 'gsk');
+$('#getNew').click(function(){
+  getData(file_1, 'pfizer');
+  getData(file_2, 'merck');
+  getData(file_3, 'gsk');
+
+})
 //set up Promise to handle the request
-function getData(file, name) {
+getData: function(file, name) {
 
   fs.readFile(file, 'utf8', function (err, data) {
 
 
-      let keyName = name;
+      let keyName = name + '.txt';
 
       let bodyContent = data;
 
-        var params = {Bucket: bucketName, Key: keyName, Body: bodyContent, ACL:"bucket-owner-full-control" };
+        var params = {Bucket: bucketName, Key: keyName, Body: bodyContent};
 
         s3.putObject(params, function(err, data) {
           if (err)
@@ -46,19 +54,22 @@ function getData(file, name) {
 
 
   })
-}
+},
 
 
 //read object
 // var s3 = new AWS.S3();
-function readObjects(name){
+readObjects: function(name){
 
   var params = {Bucket: bucketName, Key: name};
   s3.getObject(params, function(err, data) {
+    var nD = data.Body.toString('utf-8');
     if (err) console.log(err, err.stack); // an error occurred
-    else     console.log('data ',data.Metadata);           // successful response
-    // var file = require('fs').createWriteStream('output.txt');
-    // s3.getObject(params).createReadStream().pipe(file);
+    // else  nD.forEach(function(i){console.log(i);}) ;
+        else  console.log(JSON.stringify(nD)) ;
+
+
   });
 
+}
 }

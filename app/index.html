@@ -4,11 +4,25 @@
   <title>Crawler</title>
 </head>
 <body>
+  <button id="getNew"type="button" name="button">Get New</button>
+
   <div id="stories">
 
   </div>
 
+
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.js"></script>
 		<script src="bundle.js"></script>
+    	<script src="aws_s3.js"></script>
+      <script src='/src/lib/jsdom_browserify.js'></script>
+<script>
+    jsdomCapsule = require('jsdom_capsule');
+    jsdomCapsule.env(
+        '<div></div>',
+        function (errors, window) {
+            console.log('message');
+        }
+    );
+</script>
 </body>
 </html>

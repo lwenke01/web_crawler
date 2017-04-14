@@ -30315,84 +30315,246 @@ function extend() {
 }
 
 },{}],165:[function(require,module,exports){
+(function (__dirname){
 'use strict';
 
-const request = require('request');
-const cheerio = require('cheerio');
-const fs = require('fs');
 
-//blog lists
-var blog1 = {url:"http://www.merck.com/about/leadership/executive-committee/home.html", name: "Merck", category: "blog"};
-var blog2 = {url:"https://davidwalsh.name", name: "David Walsh", category: "blog"};
+var fs = require('fs');
+var path = require('path');
+var request = require('request');
+var cheerio = require('cheerio');
+var merckJson = path.resolve(__dirname, './output/company_profiles/merck.json');
 
 
-//codinghorror
-request(blog1.url, function(error, response, body) {
-  if(error) {
-    console.log("Error: " + error);
+String.prototype.toProperCase = function () {
+  return this.replace(/\w\S*/g, function(txt){return txt.charAt(0).toUpperCase() + txt.substr(1).toLowerCase();});
+};
+var _id,company,name, title, yearStart,image,description,link, source, lastUpdated;
+var json = {_id: '', company: '',exe_name: '',title: '', yearStart:'', image: '',description:'',  link:'', source:'', lastUpdated:''};
+
+
+class Company {
+  constructor(name, url, root, jFile){
+    this.name = name;
+    this.url = url;
+    this.root = root;
+    this.jfile = jFile;
   }
-  console.log("Status code: " + response.statusCode);
+};
+var co_1 = new Company('Merck', 'http://www.merck.com/about/leadership/executive-committee/home.html','http://www.merck.com', merckJson);
+var co_2 = new Company('pfizer', 'http://www.pfizer.com/about/leadership-and-structure/meet-executive-leaders','http://www.pfizer.com');
+var co_3 = new Company('gsk', 'http://www.gsk.com/en-gb/about-us/corporate-executive-team/','http://www.gsk.com');
+// company1
+$('#getNew').click(function(){
+  console.log('clicked');
+$.when(req1()).done(function(){
+  getJson(co_1.jFile)
+})
+
+})
+
+var getJson = function(file) {
+  $.getJSON(file, function(data) {
+          var output;
+
+          $.each(data, function(key, val) {
+            console.log(val);
+              output += '<div class="tRow">';
+              output += '<h3 class="rowHead">' + val.exe_name + '</h3>';
+              // output += '<td class="td_time">' + val.title + '</td>';
+              // output += '<td class="td_idcode searchA"><a id="rec_' + val.RecordID + '" class="rtI"  data="' + val.RecordID + '" >' + val.idcode + '</a></td>';
+              // // output +=   '<td>'+val.createdBy +'</td>';
+              // var x = new Date(val.LastModifiedDate);
+              // var lastModDate = x.getDate() + '-' + (x.getMonth() + 1) + '-' + x.getFullYear();
+              // output += '<td class="td_lastMod">' + val.LastModifiedBy + '</td>';
+              // output += '<td class="td_dateMod">' + lastModDate + '</td>';
+              output += '</div>';
+          });
+          $('#stories').html(output);
+
+      });
+
+}
+
+var req1 = function(){
+
+request(co_1.url, function(error, response, body) {
+  if(error) {
+    console.log('Error: ' + error);
+  }
+  console.log('Status code: ' + response.statusCode + ': ' + co_1.name);
 
   var $ = cheerio.load(body);
 
-  var name, title, image,description,link, source, lastUpdated;
-  var json = {name: "",title: "", image: "",description:"",  link:"", source:"", lastUpdated:""};
+  $('div.content_container > div.container > .row >.column_middle >.row').each(function( index ){
+    var sumArray = [];
+    $(this).find('div.col-lg-9.col-md-9.col-sm-12 > ul > li').each(function( index){
+      var li_text = $(this).text().trim();
+      sumArray.push(li_text);
+    });
+    var exe_name =  $(this).find('div.col-lg-3.col-md-3.col-sm-12 > img').attr('alt');
+
+    var title = sumArray[0]
+    var image = $(this).find('div.col-lg-3.col-md-3.col-sm-12 > img').attr('src');
+    var description =sumArray[0];
+    var link = $(this).find('div.col-lg-9.col-md-9.col-sm-12 > a').attr('href');
 
 
-  $('div.content_container > div.container > .row > .col-lg-3 col-md-3.col-sm-12.column_middle >.row').each(function( index, data ){
-  console.log(data); {
-    var name =  $(this).find('div.col-lg-3 col-md-3 col-sm-12 > img[alt]').text().trim();
-    var title = $(this).find('div.col-lg-9.col-md-9 col-sm-12 > h4.media-heading').text().trim();
-      var image = $(this).find('div.col-lg-3 col-md-3 col-sm-12 > img').text().trim();
-    var description = $(this).find('section.post-content > p').text().trim().slice(0,100);
-    var date = $(this).find('header.post-header > span.post-meta').text().trim();
-    var link = blog1.url + $(this).find('header.post-header > h2.post-title > a' ).attr('href');
-    var source = blog1.name;
 
-//save as JSON data
-      json.title = title;
-      json.description = description;
-      json.date = date;
+
+    var source = co_1.url;
+    var un = image.split('/');
+    var lastUpdated = new Date();
+    var titleArray = [];
+    var n =title.split(',');
+    var yearStart = n.pop();
+    if(n[n.length -1] === ' Inc.'){
+      n.pop();
+    }
+    if(n[n.length -1] === ' Merck & Co.'){
+      n.pop();
+    }
+
+    var nlen = n.length;
+
+    n.forEach(function(v, i){
+      if(v !== ' Merck & Co.' || ' Inc.'){
+
+        titleArray.push(v)
+      }
+    })
+    json._id = un[un.length -1].split('.')[0].toLowerCase();
+        json.company = co_1.name;
+    json.exe_name = exe_name.toProperCase();
+    if(titleArray.length === 0){
+      json.title = title.toProperCase();
+    } else {
+      json.title = titleArray.join(',').toProperCase();
+
+    }
+    json.yearStart = yearStart.split(' ').join('');
+    json.image = co_1.root + image;
+    json.description = sumArray;
+    if(typeof link === 'undefined'){
       json.link = link;
-      json.source = source;
-  //print to json
-      $('#stories').appendTo(json);
-       fs.appendFileSync('app/output/leadership.json', JSON.stringify(json) + '\n');
-     }
+
+    } else {
+      var splitLink = link.split('/');
+      var newLink = splitLink[splitLink.length -1].split(' ').join('%20');
+      json.link = co_1.root + '/about/leadership/executive-committee/' +newLink;
+
+    }
+    json.source = source
+    json.lastUpdated = lastUpdated;
+  //   //print to json
+  var newCo = co_1.name.toLowerCase();
+
+
+
+
+    fs.appendFileSync('app/output/company_profiles/'+ newCo + '.json', JSON.stringify(json) + '\n');
   });
+
 });
 
-//davidwalsh
-// request(blog2.url, function(error, response, body) {
+}
+//company2
+// request(company2.url, function(error, response, body) {
 //   if(error) {
-//     console.log("Error: " + error);
+//     console.log('Error: ' + error);
 //   }
-//   console.log("Status code: " + response.statusCode);
+//   console.log('Status code: ' + response.statusCode);
+//   var $ = cheerio.load(body);
+// var newArray = [];
+//   $('.profile-media-block-container2 > .profile-media-block2.executive-block').each(function( index ){
+//
+//     var _id = $(this).find('img').attr('alt').split('.')[0];
+//     var name =  $(this).find('h2.profile-media-block-title').text().trim().split(',')[0];
+//     var title =  $(this).find('span.profile-media-block-subtitle').text().trim();
+//     var title2 = $(this).text().trim().split('\r\n\t\t')[1];
+//
+//     var image = $(this).find('img').attr('src');
+//     var description ='hey';
+//     var link = $(this).find('a.profile-media-block-link').attr('href');
+//     var source = company2.url;
+//     var lastUpdated = new Date();
+//
+//     json._id = _id;
+//         json.company = company2.name;
+//     json.name = name.toProperCase();
+//     if(!title) {
+//       json.title = title2.toProperCase();
+//     } else {
+//       json.title = title.toProperCase();
+//     }
+//
+//     json.yearStart = '';
+//     json.image =  company2.root + image;
+//     json.description = description;
+//     json.link = company2.root + link;
+//
+//     json.source = source;
+//     json.lastUpdated = lastUpdated;
+//     //print to json
+//
+//
+//
+//     newArray.push( JSON.stringify(json )+ '\n' );
+//
+//     var newCo = company2.name.toLowerCase();
+//     fs.appendFileSync('app/output/company_profiles/'+ newCo + '.json', JSON.stringify(json )+ '\n');
+//
+//   });
+//
+// });
+//
+// request(company3.url, function(error, response, body) {
+//   if(error) {
+//     console.log('Error: ' + error);
+//   }
+//   console.log('Status code: ' + response.statusCode);
 //
 //   var $ = cheerio.load(body);
+//   $('.main-container > ul.grid-listing__list > li.grid-listing__item').each(function( index ){
 //
-//   var title, description, date, link, source;
-//   var json = {title: "", description:"", date:"", link:"", source:""};
+//     var name =  $(this).find('.grid-listing__content > h2').text().trim();
+//     var title =  $(this).find('.grid-listing__content > p').text().trim();
+//     var title2 = $(this).text().trim().split('\r\n\t\t')[1];
 //
-//   $('#main > ul.post-list > li').each(function( index ) {
-//     var title = $(this).find('span > img').attr('alt');
-//     var description = $(this).find('div.preview > p').text().trim().slice(0,100);
-//     var date = $(this).find('div.meta > time').text().trim();
-//     var link = $(this).attr('data-url');
-//     var source = blog2.name;
+//     var image = $(this).find(' a > div.grid-listing__img > img').attr('data-src');
 //
-// //save as JSON data
-//       json.title = title;
-//       json.description = description;
-//       json.date = date;
-//       json.link = link;
-//       json.source = source;
-//   //print to json
-//        fs.appendFileSync('app/output/tech.json', JSON.stringify(json) + '\n');
+//     var description ='hey';
+//     var link = $(this).find('a').attr('href');
+//     var source = company3.url;
+//     var lastUpdated = new Date();
+//     var id_spl = link.split('/');
+//     var _id = id_spl[id_spl.length -2];
+//
+//     json._id = _id;
+//     json.company = company3.name;
+//     json.name = name.toProperCase();
+//     if(!title) {
+//       json.title = title2.toProperCase();
+//     } else {
+//       json.title = title.toProperCase();
+//     }
+//
+//     json.yearStart = '';
+//     json.image = company3.root +  image;
+//     json.description = description;
+//     json.link = company3.root + link;
+//
+//     json.source = source;
+//     json.lastUpdated = lastUpdated;
+//     //print to json
+//   var newCo = company3.name.toLowerCase();
+//     fs.appendFileSync('app/output/company_profiles/'+ newCo + '.json', JSON.stringify(json) + '\n');
+//
 //   });
 // });
 
-},{"cheerio":184,"fs":1,"request":307}],166:[function(require,module,exports){
+}).call(this,"/app/bots")
+},{"cheerio":184,"fs":1,"path":117,"request":307}],166:[function(require,module,exports){
 // Copyright 2011 Mark Cavage <mcavage@gmail.com> All rights reserved.
 
 
